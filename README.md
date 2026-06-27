@@ -1,4 +1,4 @@
-# 🚀 SAIL Recruitment AI (SMART-CV-MATCHING)
+# 🚀 3000 Recruitment AI (SMART-CV-MATCHING)
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green.svg)](https://fastapi.tiangolo.com/)
@@ -8,7 +8,7 @@
 
 ## 📌 Project Overview
 
-**SMART-CV-MATCHING** is a high-performance, graph-based recruitment platform designed to revolutionize the candidate screening process. Developed as part of the Security and Artificial Intelligence Lab (SAIL), this application moves beyond simple keyword matching by leveraging advanced semantic extraction, graph theory, and natural language processing to evaluate candidate suitability with significantly higher accuracy.
+**3000-CV-MATCHING** is a high-performance, graph-based recruitment platform designed to revolutionize the candidate screening process. Developed as part of the AIO 2026 AICONQUER Program, this application moves beyond simple keyword matching by leveraging advanced semantic extraction, graph theory, and natural language processing to evaluate candidate suitability with significantly higher accuracy.
 
 The platform enables HR professionals to upload batches of resumes, automatically extract relevant information, compare applicants against Job Description (JD) requirements, and rank candidates using explainable graph-based matching scores.
 
@@ -29,7 +29,7 @@ The platform enables HR professionals to upload batches of resumes, automaticall
 ## 📂 Project Structure
 
 ```text
-SMART-CV-MATCHING/
+3000-CV-MATCHING/
 ├── frontend/              # HTML + Tailwind CSS frontend
 ├── logs/                  # Performance metrics and execution logs
 ├── src/
@@ -182,6 +182,6 @@ Released under the **MIT License**.
 
 ## 🤝 Credits
 
-Developed by **Do Trung Hieu** at the **Security and Artificial Intelligence Lab (SAIL)**.
+Developed by **Do Trung Hieu** and **Nguyen Duy Hieu**.
 
 Inspired by recent advances in semantic retrieval, graph representation learning, and modern LLM-powered recruitment systems.
