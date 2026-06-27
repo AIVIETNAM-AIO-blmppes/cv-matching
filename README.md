@@ -1,36 +1,187 @@
-# Smart CV-JD Matching System (Graph-Based Architecture)
+# 🚀 SAIL Recruitment AI (SMART-CV-MATCHING)
 
-Hệ thống phân tích hồ sơ ứng viên (CV) và đối chiếu thông minh với yêu cầu tuyển dụng (Job Description - JD) ứng dụng cấu trúc dữ liệu Đồ thị tri thức (Knowledge Graph) và thiết kế hệ thống hướng đối tượng (OOP). Dự án thuộc chương trình đào tạo Khóa học AI Viet Nam (AIO2026) - Module 01.
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green.svg)](https://fastapi.tiangolo.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## 🚀 Tính năng cốt lõi (Core Features)
+---
 
-* **Layout-Aware ETL Pipeline:** Hệ thống trích xuất văn bản từ cấu trúc PDF phức tạp, tự động nhóm và sắp xếp khối văn bản theo tọa độ không gian đồ họa (PyMuPDF) để bảo toàn chính xác cấu trúc CV 2 cột.
-* **OCR Fail-safe Engine:** Cơ chế tự động phát hiện tài liệu scan dạng hình ảnh và kích hoạt hệ thống nhận diện ký tự quang học (Tesseract OCR) khi dữ liệu text thô bị thiếu hụt.
-* **Knowledge Graph Matching Logic:** Giải quyết triệt để nhược điểm của phương pháp đối sánh từ khóa thô (Exact Keyword Match). Sử dụng thuật toán duyệt đồ thị nâng cao (BFS) kết hợp hàm suy giảm khoảng cách (Decay Factor) để tính toán điểm liên đới ngữ nghĩa giữa các kỹ năng có tính liên kết hoặc phân cấp phân tầng.
-* **High Performance Memoization Cache:** Tích hợp bộ đệm lưu trữ trạng thái khoảng cách đồ thị cục bộ, tối ưu hóa tốc độ xử lý từ $O(V+E)$ về $O(1)$ cho các truy vấn trùng lặp khi chạy tập dữ liệu lớn.
-* **Production-grade Web Dashboard:** Giao diện Dashboard tối giản, hiện đại (Tailwind CSS) tương tác trực tiếp với hệ thống API (FastAPI) bất đồng bộ, biểu diễn cấu trúc năng lực trực quan qua biểu đồ Radar (Chart.js) và truy vết chính xác đường đi thực thi thuật toán trên Graph Path.
+## 📌 Project Overview
 
-## 📁 Cấu trúc thư mục dự án (Project Architecture)
+**SMART-CV-MATCHING** is a high-performance, graph-based recruitment platform designed to revolutionize the candidate screening process. Developed as part of the Security and Artificial Intelligence Lab (SAIL), this application moves beyond simple keyword matching by leveraging advanced semantic extraction, graph theory, and natural language processing to evaluate candidate suitability with significantly higher accuracy.
+
+The platform enables HR professionals to upload batches of resumes, automatically extract relevant information, compare applicants against Job Description (JD) requirements, and rank candidates using explainable graph-based matching scores.
+
+---
+
+## 🌟 Key Features
+
+* ⚡ **Intelligent Matching** – Uses graph-based algorithms and NLP for semantic candidate-job matching beyond keyword overlap.
+* 📦 **Batch Resume Processing** – Automatically processes ZIP archives containing multiple resumes.
+* 📊 **Interactive Analytics** – Candidate dashboards powered by Chart.js for visual analysis.
+* ⚖️ **Multi-Candidate Comparison** – Compare up to three applicants simultaneously using synchronized radar charts.
+* 📋 **CRM-Lite Workflow** – Track recruitment stages (New, Shortlisted, Interviewing, Rejected) with persistent browser storage.
+* 📤 **Excel Export** – Generate professional hiring reports in XLSX format.
+* 🚀 **FastAPI Backend** – High-performance REST API for scalable resume processing.
+
+---
+
+## 📂 Project Structure
 
 ```text
-smart-cv-matching/
-├── checkpoints/          # Lưu trữ cấu trúc phân tầng đồ thị tri thức (Graph Weights)
-├── data/
-│   └── raw/temp/         # Thư mục xử lý file biểu mẫu tạm thời (Tự động dọn dẹp)
-├── docs/                 # Tài liệu thiết kế hệ thống và Technical Report
-├── frontend/
-│   └── index.html        # Giao diện chính tương tác Dashboard (Tailwind, Vanilla JS, Chart.js)
-├── logs/
-│   └── metrics.json      # Nhật ký giám sát hiệu năng và lịch sử chấm điểm hệ thống
+SMART-CV-MATCHING/
+├── frontend/              # HTML + Tailwind CSS frontend
+├── logs/                  # Performance metrics and execution logs
 ├── src/
-│   ├── api/              # Tầng đóng gói phân phối dịch vụ API (FastAPI)
-│   │   ├── main.py       # Điểm khởi chạy ứng dụng và quản lý vòng đời hệ thống (Lifespan)
-│   │   ├── routes.py     # Định tuyến điều phối Endpoint và xử lý kiểm soát ngoại lệ
-│   │   └── schemas.py    # Khung xác thực và ràng buộc mô hình dữ liệu (Pydantic)
-│   ├── core/             # Tầng xử lý logic thuật toán nòng cốt
-│   │   ├── graph.py      # Định nghĩa mô hình cấu trúc dữ liệu SkillNode và SkillGraph
-│   │   └── matcher.py    # Thuật toán duyệt BFS truy vết đường đi và tính toán điểm số
-│   └── etl/              # Đường ống xử lý và chuyển đổi dữ liệu
-│       └── parser.py     # Cấu trúc trích xuất văn bản đa tầng (PyMuPDF / OCR Fallback)
-├── requirements.txt      # Danh sách chi tiết các thư viện phụ thuộc môi trường
-└── README.md             # Tài liệu hướng dẫn sử dụng hệ thống
+│   ├── api/               # FastAPI endpoints
+│   ├── core/              # Graph matching algorithms
+│   └── etl/               # Resume extraction & preprocessing
+├── tests/                 # Unit & integration tests
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## 🛠️ Setup Instructions
+
+### 1. Prerequisites
+
+* Python 3.10+
+* pip
+* Git
+* Modern web browser
+
+---
+
+### 2. Clone Repository
+
+```bash
+git clone https://github.com/your-username/smart-cv-matching.git
+cd smart-cv-matching
+```
+
+---
+
+### 3. Create Virtual Environment
+
+**Windows**
+
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+**macOS / Linux**
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+---
+
+### 4. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## 🚀 Running the Application
+
+### Start Backend
+
+```bash
+uvicorn src.api.main:app --reload --port 8000
+```
+
+Backend API:
+
+```
+http://127.0.0.1:8000
+```
+
+Swagger Documentation:
+
+```
+http://127.0.0.1:8000/docs
+```
+
+---
+
+### Start Frontend
+
+#### Option 1 (Recommended)
+
+Install the **Live Server** extension in VS Code.
+
+Right-click:
+
+```
+frontend/index.html
+```
+
+Choose:
+
+```
+Open with Live Server
+```
+
+---
+
+#### Option 2 (Python HTTP Server)
+
+```bash
+cd frontend
+python -m http.server 5500
+```
+
+Open:
+
+```
+http://localhost:5500
+```
+
+---
+
+## 📈 Performance Metrics
+
+Execution statistics are automatically logged into:
+
+```text
+logs/
+├── metrics.json
+└── builder_metrics.json
+```
+
+These files contain processing latency, matching performance, extraction statistics, and other KPIs used to evaluate and improve the recommendation engine.
+
+---
+
+## 🧩 Tech Stack
+
+* Python
+* FastAPI
+* HTML
+* Tailwind CSS
+* JavaScript
+* Chart.js
+* Pandas
+* NetworkX
+* OpenPyXL
+
+---
+
+## 📝 License
+
+Released under the **MIT License**.
+
+---
+
+## 🤝 Credits
+
+Developed by **Do Trung Hieu** at the **Security and Artificial Intelligence Lab (SAIL)**.
+
+Inspired by recent advances in semantic retrieval, graph representation learning, and modern LLM-powered recruitment systems.
