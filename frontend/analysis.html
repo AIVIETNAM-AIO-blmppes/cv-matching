@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Candidate Analysis | SAIL AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800">
+    <header class="bg-white border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <a href="index.html" class="text-slate-500 hover:text-indigo-600">&larr; Back to Dashboard</a>
+            <h1 class="font-bold">Detailed Analysis</h1>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-8">
+        <div class="space-y-6">
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <h2 class="text-lg font-bold text-slate-900 mb-4">Candidate Profile</h2>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div><p class="text-slate-500">Full Name</p><p id="candName" class="font-semibold"></p></div>
+                    <div><p class="text-slate-500">Email</p><p id="candEmail" class="font-semibold"></p></div>
+                    <div><p class="text-slate-500">Phone</p><p id="candPhone" class="font-semibold"></p></div>
+                    <div><p class="text-slate-500">Location</p><p id="candLoc" class="font-semibold"></p></div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <h2 class="text-lg font-bold text-slate-900 mb-4">Skill Gap Analysis</h2>
+                <div id="gapList" class="space-y-2"></div>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <canvas id="detailRadarChart"></canvas>
+            </div>
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <h2 id="candidateName" class="text-xl font-bold mb-4"></h2>
+                <div id="skillTable" class="space-y-2 text-sm"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const cand = JSON.parse(localStorage.getItem('activeCandidate'));
+        if(!cand) window.location.href = 'index.html';
+
+        document.getElementById('candName').textContent = cand.demographics.name;
+        document.getElementById('candEmail').textContent = cand.demographics.email;
+        document.getElementById('candPhone').textContent = cand.demographics.phone;
+        document.getElementById('candLoc').textContent = cand.demographics.location;
+
+        // Fill Gap Analysis (Skills < 50% score)
+        const gapList = document.getElementById('gapList');
+        Object.entries(cand.details).forEach(([skill, info]) => {
+            if (info.score < 0.5) {
+                gapList.innerHTML += `
+                    <div class="flex items-center text-red-600 text-sm">
+                        <span class="mr-2">✕</span> ${skill} (Missing/Low proficiency)
+                    </div>
+                `;
+            }
+        });
+        
+        // Render Skills
+        const skills = Object.entries(cand.details).sort((a,b) => b[1].score - a[1].score);
+        document.getElementById('skillTable').innerHTML = skills.map(([s, d]) => `
+            <div class="flex justify-between items-center p-3 bg-slate-50 rounded border">
+                <span class="font-medium capitalize">${s}</span>
+                <span class="font-mono text-indigo-600 font-bold">${(d.score * 100).toFixed(0)}%</span>
+            </div>
+        `).join('');
+
+        // Render Chart
+        new Chart(document.getElementById('detailRadarChart'), {
+            type: 'radar',
+            data: {
+                labels: Object.keys(cand.details).map(s => s.toUpperCase()),
+                datasets: [{
+                    label: 'Match Quality',
+                    data: Object.values(cand.details).map(d => d.score * 100),
+                    backgroundColor: 'rgba(79, 70, 229, 0.2)',
+                    borderColor: '#4f46e5'
+                }]
+            }
+        });
+    </script>
+</body>
+</html>

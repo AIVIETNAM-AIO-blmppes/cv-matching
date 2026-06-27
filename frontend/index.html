@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>SAIL Recruitment AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <header class="bg-white border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <h1 class="text-xl font-bold text-indigo-600">SAIL Recruitment AI</h1>
+            <nav class="flex gap-6 text-sm font-medium">
+                <a href="index.html" class="text-indigo-600 border-b-2 border-indigo-600 py-5">Dashboard</a>
+                <a href="about.html" class="text-slate-500 hover:text-indigo-600 py-5">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div class="lg:col-span-1">
+                <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                    <form id="uploadForm" class="space-y-4">
+                        <input type="file" id="cvFile" accept=".zip" required class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                        
+                        <div class="flex gap-2">
+                            <input type="text" id="skillInput" placeholder="Add skill..." class="w-full border p-2 rounded text-sm">
+                            <button type="button" onclick="addSkill()" class="bg-indigo-600 text-white px-3 rounded font-bold">+</button>
+                        </div>
+                        
+                        <div id="skillsContainer" class="flex flex-wrap gap-2 min-h-[40px]"></div>
+                        
+                        <button type="submit" id="submitBtn" class="w-full bg-indigo-600 text-white py-2 rounded-lg font-medium hover:bg-indigo-700">Process</button>
+                    </form>
+                    
+                    <button type="button" onclick="clearResults()" class="w-full mt-4 text-xs text-slate-400 hover:text-red-500 underline">
+                        Clear All Saved Results
+                    </button>
+                </div>
+            </div>
+            
+            <div class="lg:col-span-3">
+                <div id="emptyState" class="bg-white border border-slate-200 rounded-xl p-12 text-center text-slate-400 shadow-sm">
+                    Upload a ZIP batch and define JD skills to begin.
+                </div>
+                
+                <div id="resultsTable" class="bg-white border rounded-xl overflow-hidden hidden">
+                    <table class="w-full">
+                        <thead class="bg-slate-50 text-xs uppercase text-slate-500">
+                            <tr>
+                                <th class="px-6 py-4">Select</th> <th class="px-6 py-4">Rank</th>
+                                <th class="px-6 py-4">File Name</th>
+                                <th class="px-6 py-4">Score</th>
+                                <th class="px-6 py-4">Status</th> <th class="px-6 py-4">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardBody" class="divide-y"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+    <div class="mb-4 flex gap-2 justify-end">
+        <button id="compareBtn" onclick="openComparisonModal()" 
+                class="hidden bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-indigo-700 transition-all shadow-lg">
+            Compare Selected
+        </button>
+        
+        <button id="exportBtn" onclick="exportToExcel()" 
+                class="hidden bg-emerald-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-emerald-700 transition-all shadow-lg">
+            Export to Excel
+        </button>
+    </div>
+
+    <div id="compareModal" class="hidden fixed inset-0 z-50 bg-slate-900/50 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-xl shadow-2xl max-w-5xl w-full p-8 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-slate-800">Candidate Comparison</h2>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="h-96 w-full relative">
+                    <canvas id="compareRadarChart"></canvas>
+                </div>
+                <div id="compareDetails" class="space-y-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let candidatesData = [];
+        let jdSkillsList = [];
+
+        // LOAD DATA
+        document.addEventListener("DOMContentLoaded", () => {
+            const saved = localStorage.getItem('batchResults');
+            if(saved) {
+                candidatesData = JSON.parse(saved);
+                renderLeaderboard(candidatesData);
+            }
+        });
+
+        // SKILL MANAGEMENT
+        document.getElementById('skillInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); 
+                addSkill();
+            }
+        });
+
+        function addSkill() {
+            const input = document.getElementById('skillInput');
+            const val = input.value.trim().toLowerCase();
+            if (val && !jdSkillsList.includes(val)) {
+                jdSkillsList.push(val);
+                renderTags();
+                input.value = '';
+            }
+        }
+
+        function renderTags() {
+            const container = document.getElementById('skillsContainer');
+            container.innerHTML = jdSkillsList.map(s => `
+                <span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded text-xs font-medium flex items-center gap-1">
+                    ${s} <button type="button" onclick="removeSkill('${s}')" class="hover:text-indigo-900 font-bold">×</button>
+                </span>
+            `).join('');
+        }
+
+        function removeSkill(skill) {
+            jdSkillsList = jdSkillsList.filter(s => s !== skill);
+            renderTags();
+        }
+
+        // PROCESSING
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append("cv_zip", document.getElementById('cvFile').files[0]);
+            jdSkillsList.forEach(s => formData.append("jd_skills", s));
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true; btn.textContent = "Processing...";
+
+            try {
+                const response = await fetch("http://localhost:8000/api/v1/evaluate-batch", { method: "POST", body: formData });
+                candidatesData = await response.json();
+                localStorage.setItem('batchResults', JSON.stringify(candidatesData));
+                renderLeaderboard(candidatesData);
+            } catch(err) { alert("Error: " + err.message); }
+            finally { btn.disabled = false; btn.textContent = "Process"; }
+        });
+
+        let selectedCandidates = [];
+
+        // 1. Updated Render Leaderboard to include checkboxes
+        function renderLeaderboard(data) {
+            // FIX: Force a reset of selections when the table is re-rendered
+            selectedCandidates = [];
+            document.getElementById('compareBtn').classList.add('hidden');
+
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('resultsTable').classList.remove('hidden');
+            
+            // Show/Hide Export Button
+            document.getElementById('exportBtn').classList.remove('hidden');
+
+            const body = document.getElementById('leaderboardBody');
+            const savedStatuses = JSON.parse(localStorage.getItem('candidateStatuses') || '{}');
+            const sortedData = [...data].sort((a,b) => b.score - a.score);
+            
+            body.innerHTML = sortedData.map((cand, i) => {
+                const savedStatus = savedStatuses[cand.candidate_id] || 'New';
+                
+                return `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-6 py-4">
+                        <input type="checkbox" onchange="toggleSelection('${cand.candidate_id}')" 
+                            class="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500">
+                    </td>
+                    <td class="px-6 py-4 font-bold text-slate-500">#${i+1}</td>
+                    <td class="px-6 py-4 font-medium">${cand.name}</td>
+                    <td class="px-6 py-4">${cand.score}%</td>
+                    <td class="px-6 py-4">
+                        <select onchange="updateCandidateStatus('${cand.candidate_id}', this.value)" 
+                                class="text-xs border border-slate-300 rounded-md p-1 bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <option value="New" ${savedStatus === 'New' ? 'selected' : ''}>New</option>
+                            <option value="Shortlisted" ${savedStatus === 'Shortlisted' ? 'selected' : ''}>Shortlisted</option>
+                            <option value="Interviewing" ${savedStatus === 'Interviewing' ? 'selected' : ''}>Interviewing</option>
+                            <option value="Rejected" ${savedStatus === 'Rejected' ? 'selected' : ''}>Rejected</option>
+                        </select>
+                    </td>
+                    <td class="px-6 py-4">
+                        <button onclick="navigateToAnalysis(${i})" class="text-indigo-600 underline text-sm font-semibold">Analyze</button>
+                    </td>
+                </tr>
+            `}).join('');
+        }
+
+        // Updates the status for a specific candidate ID and persists to localStorage
+        function updateCandidateStatus(candidateId, newStatus) {
+            // 1. Get current object
+            const savedStatuses = JSON.parse(localStorage.getItem('candidateStatuses') || '{}');
+            
+            // 2. Update the key
+            savedStatuses[candidateId] = newStatus;
+            
+            // 3. Save back
+            localStorage.setItem('candidateStatuses', JSON.stringify(savedStatuses));
+            
+            console.log(`Candidate ${candidateId} updated to: ${newStatus}`);
+        }
+
+        // 2. Selection Logic
+        function toggleSelection(id) {
+            const index = selectedCandidates.indexOf(id);
+            if (index > -1) {
+                selectedCandidates.splice(index, 1);
+            } else {
+                if (selectedCandidates.length < 3) {
+                    selectedCandidates.push(id);
+                } else {
+                    alert("You can only compare up to 3 candidates.");
+                    event.target.checked = false; // Uncheck
+                    return;
+                }
+            }
+            
+            // Toggle Button Visibility
+            const btn = document.getElementById('compareBtn');
+            selectedCandidates.length > 1 ? btn.classList.remove('hidden') : btn.classList.add('hidden');
+        }
+
+        // 3. Comparison Modal Logic
+        let compareChart = null;
+        function openComparisonModal() {
+            const modal = document.getElementById('compareModal');
+            
+            // 1. Get filtered data
+            const selectedData = candidatesData.filter(c => selectedCandidates.includes(c.candidate_id));
+            
+            console.log("Debug - Selected Candidates:", selectedCandidates);
+            console.log("Debug - Selected Data Objects:", selectedData);
+
+            if (selectedData.length === 0) {
+                alert("No candidate data found for selection.");
+                return;
+            }
+
+            // 2. Show the modal BEFORE rendering the chart
+            modal.classList.remove('hidden');
+
+            // 3. Render
+            try {
+                const ctx = document.getElementById('compareRadarChart').getContext('2d');
+                
+                if (compareChart) compareChart.destroy();
+                
+                // Safety check for empty details
+                if (!selectedData[0].details || Object.keys(selectedData[0].details).length === 0) {
+                    console.error("Candidate missing 'details' object");
+                    document.getElementById('compareDetails').innerHTML = "<p class='text-red-500'>No skill data available to compare.</p>";
+                    return;
+                }
+
+                compareChart = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: Object.keys(selectedData[0].details).map(s => s.toUpperCase()),
+                        datasets: selectedData.map((c, i) => ({
+                            label: c.name,
+                            data: Object.values(c.details).map(d => d.score * 100),
+                            backgroundColor: i === 0 ? 'rgba(79, 70, 229, 0.2)' : 
+                                            i === 1 ? 'rgba(16, 185, 129, 0.2)' : 
+                                                    'rgba(245, 158, 11, 0.2)',
+                            borderColor: i === 0 ? '#4f46e5' : 
+                                        i === 1 ? '#10b981' : 
+                                                '#f59e0b'
+                        }))
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false, // Important when using fixed container height
+                        scales: {
+                            r: { beginAtZero: true, max: 100 }
+                        }
+                    }
+                });
+
+                // 4. Render Table
+                document.getElementById('compareDetails').innerHTML = selectedData.map(c => `
+                    <div class="border rounded-lg p-4 bg-slate-50">
+                        <h3 class="font-bold text-slate-800">${c.name}</h3>
+                        <p class="text-sm text-slate-500">${c.demographics?.location || 'Location N/A'}</p>
+                        <div class="mt-2 text-sm font-mono font-bold text-indigo-600">${c.score}% Match Score</div>
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                console.error("Chart Error:", err);
+                alert("Error rendering chart. Check browser console.");
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('compareModal').classList.add('hidden');
+        }
+
+        function clearResults() {
+            localStorage.removeItem('batchResults');
+            // localStorage.removeItem('candidateStatuses'); // Optional: clear statuses too
+            candidatesData = [];
+            
+            // FIX: Reset selection state
+            selectedCandidates = []; 
+            document.getElementById('compareBtn').classList.add('hidden');
+            document.getElementById('exportBtn').classList.add('hidden'); // Also hide export
+            
+            document.getElementById('resultsTable').classList.add('hidden');
+            document.getElementById('emptyState').classList.remove('hidden');
+            document.getElementById('leaderboardBody').innerHTML = '';
+        }
+
+        function navigateToAnalysis(index) {
+            const sortedData = [...candidatesData].sort((a,b) => b.score - a.score);
+            localStorage.setItem('activeCandidate', JSON.stringify(sortedData[index]));
+            window.location.href = 'analysis.html';
+        }
+
+        function exportToExcel() {
+            if (candidatesData.length === 0) return;
+
+            // 1. Get the current status map so the report is accurate
+            const savedStatuses = JSON.parse(localStorage.getItem('candidateStatuses') || '{}');
+            
+            // 2. Map data into a human-readable format
+            const formattedData = candidatesData.sort((a,b) => b.score - a.score).map((c, i) => ({
+                "Rank": i + 1,
+                "Name": c.name,
+                "Score (%)": c.score,
+                "Status": savedStatuses[c.candidate_id] || "New",
+                "Email": c.demographics?.email || "N/A",
+                "Phone": c.demographics?.phone || "N/A",
+                "Location": c.demographics?.location || "N/A"
+            }));
+
+            // 3. Create Workbook & Sheet
+            const ws = XLSX.utils.json_to_sheet(formattedData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Candidates");
+
+            // 4. Style and Download
+            const fileName = `SAIL_Recruitment_Report_${new Date().toISOString().slice(0,10)}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+        }
+    </script>
+</body>
+</html>
