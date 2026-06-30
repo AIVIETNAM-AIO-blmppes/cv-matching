@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>3000-CV-MATCHING — Semantic AI Resume Matching</title>
+<meta name="description" content="3000-CV-MATCHING helps recruiters identify the best candidates using semantic understanding instead of simple keyword matching." />
+
+<!-- Tailwind CDN (single instance) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Single shared stylesheet -->
+<link rel="stylesheet" href="styles.css">
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          base: '#030712', panel: '#0A0F1C', edge: 'rgba(255,255,255,0.08)',
+          indigo: '#6366F1', violet: '#A78BFA', cyan: '#22D3EE', mist: '#9CA3AF',
+        },
+        fontFamily: {
+          display: ['"Space Grotesk"', 'sans-serif'],
+          body: ['"Inter"', 'sans-serif'],
+          mono: ['"JetBrains Mono"', 'monospace'],
+        },
+      },
+    },
+  };
+</script>
+</head>
+
+<body class="bg-base text-gray-200 font-body antialiased overflow-x-hidden">
+
+  <!-- =====================================================
+       NAVIGATION
+  ====================================================== -->
+  <header id="navbar" class="fixed top-0 inset-x-0 z-50">
+    <nav class="max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between h-18 py-4" aria-label="Primary">
+      <a href="#top" class="flex items-center gap-2.5 group" aria-label="3000-CV-MATCHING home">
+        <span class="relative w-8 h-8 rounded-lg bg-gradient-to-br from-indigo via-violet to-cyan flex items-center justify-center shadow-lg shadow-indigo/30">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 2L21 7V17L12 22L3 17V7L12 2Z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
+            <circle cx="12" cy="12" r="2.4" fill="white"/>
+          </svg>
+        </span>
+        <span class="font-display font-semibold tracking-tight text-white text-[15px] sm:text-base">
+          3000<span class="text-mist">-CV-</span>MATCHING
+        </span>
+      </a>
+
+      <ul class="hidden lg:flex items-center gap-9 font-medium text-sm text-gray-300">
+        <li><a href="#about" class="hover:text-white transition-colors">About</a></li>
+        <li><a href="#features" class="hover:text-white transition-colors">Features</a></li>
+        <li><a href="#technology" class="hover:text-white transition-colors">Technology</a></li>
+        <li><a href="#pipeline" class="hover:text-white transition-colors">Pipeline</a></li>
+        <li><a href="#contact" class="hover:text-white transition-colors">Contact</a></li>
+      </ul>
+
+      <div class="flex items-center gap-3">
+        <a href="#contact" class="hidden sm:inline-flex items-center justify-center text-sm font-semibold text-white px-5 py-2.5 rounded-full btn-primary">
+          Get Started
+        </a>
+        <button id="menu-btn" class="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg border border-edge text-gray-300" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobile-menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <path d="M3 6h18M3 12h18M3 18h18"/>
+          </svg>
+        </button>
+      </div>
+    </nav>
+
+    <div id="mobile-menu" class="lg:hidden overflow-hidden max-h-0 opacity-0">
+      <ul class="glass mx-4 mb-4 rounded-2xl flex flex-col p-4 gap-1 text-sm font-medium text-gray-300">
+        <li><a href="#about" class="block px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition-colors">About</a></li>
+        <li><a href="#features" class="block px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition-colors">Features</a></li>
+        <li><a href="#technology" class="block px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition-colors">Technology</a></li>
+        <li><a href="#pipeline" class="block px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition-colors">Pipeline</a></li>
+        <li><a href="#contact" class="block px-3 py-2.5 rounded-lg hover:bg-white/5 hover:text-white transition-colors">Contact</a></li>
+        <li class="pt-2"><a href="#contact" class="flex items-center justify-center text-sm font-semibold text-white px-5 py-2.5 rounded-full btn-primary">Get Started</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- =====================================================
+       HERO
+  ====================================================== -->
+  <section id="top" class="relative min-h-screen flex items-center overflow-hidden">
+    <div class="absolute inset-0 bg-grid grid-fade pointer-events-none" aria-hidden="true"></div>
+    <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+      <div class="aurora float-slow    absolute -top-32 -left-24 w-[34rem] h-[34rem] rounded-full bg-indigo"></div>
+      <div class="aurora float-slower  absolute top-10 right-[-8rem] w-[30rem] h-[30rem] rounded-full bg-violet"></div>
+      <div class="aurora float-slowest absolute bottom-[-10rem] left-1/3 w-[28rem] h-[28rem] rounded-full bg-cyan"></div>
+    </div>
+    <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+      <span class="glow-dot absolute w-1.5 h-1.5 rounded-full bg-cyan text-cyan top-[22%] left-[12%]" style="animation-delay:.2s"></span>
+      <span class="glow-dot absolute w-2 h-2 rounded-full bg-violet text-violet top-[60%] left-[8%]" style="animation-delay:1.4s"></span>
+      <span class="glow-dot absolute w-1.5 h-1.5 rounded-full bg-indigo text-indigo top-[75%] left-[42%]" style="animation-delay:2.1s"></span>
+      <span class="glow-dot absolute w-2 h-2 rounded-full bg-cyan text-cyan top-[15%] left-[48%]" style="animation-delay:.8s"></span>
+    </div>
+    <div class="absolute inset-0 noise pointer-events-none" aria-hidden="true"></div>
+
+    <div class="relative max-w-7xl mx-auto px-6 lg:px-8 pt-28 pb-16 grid lg:grid-cols-2 gap-16 items-center w-full">
+      <div class="max-w-xl">
+        <p class="fade-up eyebrow mb-6" style="animation-delay:.05s">
+          <span class="w-1.5 h-1.5 rounded-full bg-cyan animate-pulse"></span>
+          Semantic AI for Recruitment
+        </p>
+        <h1 class="fade-up font-display text-4xl sm:text-5xl lg:text-[3.4rem] leading-[1.08] font-semibold tracking-tight text-white" style="animation-delay:.15s">
+          Smarter Resume Matching <span class="text-gradient">with AI</span>
+        </h1>
+        <p class="fade-up mt-6 text-lg text-mist leading-relaxed" style="animation-delay:.3s">
+          3000-CV-MATCHING helps recruiters identify the best candidates using semantic understanding instead of simple keyword matching.
+        </p>
+        <div class="fade-up mt-10 flex flex-col sm:flex-row gap-4" style="animation-delay:.45s">
+          <a href="#features" class="btn-primary inline-flex items-center justify-center gap-2 text-sm font-semibold text-white px-7 py-3.5 rounded-full">
+            Explore Platform
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a href="#pipeline" class="btn-secondary inline-flex items-center justify-center gap-2 text-sm font-semibold text-white px-7 py-3.5 rounded-full">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 4l13 8-13 8V4z"/></svg>
+            Watch Demo
+          </a>
+        </div>
+        <div class="fade-up mt-14 flex items-center gap-8 text-xs text-mist font-mono" style="animation-delay:.6s">
+          <div><span class="text-white text-lg font-display block">3,000+</span>signals per profile</div>
+          <div class="w-px h-8 bg-edge"></div>
+          <div><span class="text-white text-lg font-display block">&lt;200ms</span>semantic ranking</div>
+          <div class="w-px h-8 bg-edge"></div>
+          <div><span class="text-white text-lg font-display block">0</span>keyword guesswork</div>
+        </div>
+      </div>
+
+      <div data-parallax="14" class="fade-up relative" style="animation-delay:.35s">
+        <svg viewBox="0 0 520 620" class="w-full max-w-md mx-auto" role="img" aria-labelledby="pipeline-title pipeline-desc">
+          <title id="pipeline-title">How 3000-CV-MATCHING ranks candidates</title>
+          <desc id="pipeline-desc">A diagram showing a resume flowing into an AI brain, becoming semantic embeddings, and producing a ranked candidate list.</desc>
+          <defs>
+            <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#6366F1"/><stop offset="50%" stop-color="#A78BFA"/><stop offset="100%" stop-color="#22D3EE"/>
+            </linearGradient>
+            <linearGradient id="cardGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="rgba(255,255,255,0.06)"/><stop offset="100%" stop-color="rgba(255,255,255,0.02)"/>
+            </linearGradient>
+            <radialGradient id="brainGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#A78BFA" stop-opacity="0.55"/><stop offset="100%" stop-color="#A78BFA" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <path d="M260 90 L260 530" stroke="url(#lineGrad)" stroke-width="2" class="flow-path" stroke-linecap="round" opacity="0.7"/>
+          <circle r="4" fill="#67E8F9"><animateMotion dur="3s" repeatCount="indefinite" path="M260 90 L260 530"/></circle>
+
+          <g class="node-card">
+            <rect x="170" y="20" width="180" height="86" rx="16" fill="url(#cardGrad)" stroke="rgba(255,255,255,0.12)"/>
+            <g transform="translate(192, 38)">
+              <rect x="0" y="0" width="40" height="50" rx="4" fill="none" stroke="#C7D2FE" stroke-width="1.6"/>
+              <line x1="8" y1="12" x2="32" y2="12" stroke="#C7D2FE" stroke-width="1.6"/>
+              <line x1="8" y1="20" x2="32" y2="20" stroke="#C7D2FE" stroke-width="1.6"/>
+              <line x1="8" y1="28" x2="24" y2="28" stroke="#C7D2FE" stroke-width="1.6"/>
+              <circle cx="20" cy="40" r="4" fill="#6366F1"/>
+            </g>
+            <text x="248" y="55" fill="#F9FAFB" font-family="Space Grotesk, sans-serif" font-size="15" font-weight="600">Resume / CV</text>
+            <text x="248" y="74" fill="#9CA3AF" font-family="JetBrains Mono, monospace" font-size="11">raw candidate input</text>
+          </g>
+
+          <g class="node-card">
+            <circle cx="260" cy="220" r="78" fill="url(#brainGlow)"/>
+            <rect x="170" y="172" width="180" height="96" rx="18" fill="url(#cardGrad)" stroke="rgba(167,139,250,0.35)"/>
+            <g transform="translate(228,190)" stroke="#A78BFA" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 4C11 4 4 11 4 21c0 6 3 10 7 13 0 6 4 10 11 10s11-4 11-10c4-3 7-7 7-13C40 11 33 4 22 4z"/>
+              <path d="M14 15c2-3 6-3 8 0M22 15c2-3 6-3 8 0M14 24c2 3 6 3 8 0M22 24c2 3 6 3 8 0"/>
+              <circle cx="22" cy="19" r="1.4" fill="#A78BFA" stroke="none"/>
+            </g>
+            <text x="260" y="252" fill="#F9FAFB" font-family="Space Grotesk, sans-serif" font-size="15" font-weight="600" text-anchor="middle">AI Brain</text>
+          </g>
+
+          <g class="node-card">
+            <rect x="170" y="324" width="180" height="96" rx="16" fill="url(#cardGrad)" stroke="rgba(34,211,238,0.3)"/>
+            <g transform="translate(196,346)">
+              <circle class="pulse-node" cx="6" cy="6" r="3.2" fill="#22D3EE" style="animation-delay:0s"/>
+              <circle class="pulse-node" cx="30" cy="2" r="3.2" fill="#67E8F9" style="animation-delay:.3s"/>
+              <circle class="pulse-node" cx="50" cy="14" r="3.2" fill="#22D3EE" style="animation-delay:.6s"/>
+              <circle class="pulse-node" cx="14" cy="26" r="3.2" fill="#67E8F9" style="animation-delay:.9s"/>
+              <circle class="pulse-node" cx="42" cy="30" r="3.2" fill="#22D3EE" style="animation-delay:1.2s"/>
+              <line x1="6" y1="6" x2="30" y2="2" stroke="#22D3EE" stroke-width="1" opacity="0.4"/>
+              <line x1="30" y1="2" x2="50" y2="14" stroke="#22D3EE" stroke-width="1" opacity="0.4"/>
+              <line x1="6" y1="6" x2="14" y2="26" stroke="#22D3EE" stroke-width="1" opacity="0.4"/>
+              <line x1="14" y1="26" x2="42" y2="30" stroke="#22D3EE" stroke-width="1" opacity="0.4"/>
+              <line x1="50" y1="14" x2="42" y2="30" stroke="#22D3EE" stroke-width="1" opacity="0.4"/>
+            </g>
+            <text x="248" y="362" fill="#F9FAFB" font-family="Space Grotesk, sans-serif" font-size="15" font-weight="600">Semantic Embeddings</text>
+            <text x="248" y="381" fill="#9CA3AF" font-family="JetBrains Mono, monospace" font-size="11">vector(skills, context, intent)</text>
+          </g>
+
+          <g class="node-card">
+            <rect x="150" y="450" width="220" height="150" rx="18" fill="url(#cardGrad)" stroke="rgba(255,255,255,0.12)"/>
+            <text x="260" y="478" fill="#F9FAFB" font-family="Space Grotesk, sans-serif" font-size="15" font-weight="600" text-anchor="middle">Candidate Ranking</text>
+            <g font-family="JetBrains Mono, monospace" font-size="10" fill="#9CA3AF">
+              <rect x="172" y="494" width="176" height="20" rx="6" fill="rgba(99,102,241,0.18)"/>
+              <text x="180" y="508">01</text>
+              <rect x="206" y="498" width="120" height="12" rx="4" fill="#6366F1"/>
+              <text x="332" y="508" fill="#C7D2FE">98%</text>
+              <rect x="172" y="520" width="176" height="20" rx="6" fill="rgba(167,139,250,0.14)"/>
+              <text x="180" y="534">02</text>
+              <rect x="206" y="524" width="96" height="12" rx="4" fill="#A78BFA"/>
+              <text x="332" y="534" fill="#C7D2FE">91%</text>
+              <rect x="172" y="546" width="176" height="20" rx="6" fill="rgba(34,211,238,0.12)"/>
+              <text x="180" y="560">03</text>
+              <rect x="206" y="550" width="74" height="12" rx="4" fill="#22D3EE"/>
+              <text x="332" y="560" fill="#C7D2FE">86%</text>
+              <rect x="172" y="572" width="176" height="20" rx="6" fill="rgba(255,255,255,0.04)"/>
+              <text x="180" y="586">04</text>
+              <rect x="206" y="576" width="50" height="12" rx="4" fill="#475569"/>
+              <text x="332" y="586" fill="#9CA3AF">74%</text>
+            </g>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <a href="#about" class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-mist hover:text-white transition-colors" aria-label="Scroll to next section">
+      <span class="font-mono text-[10px] tracking-widest uppercase">Scroll</span>
+      <svg width="14" height="20" viewBox="0 0 14 20" fill="none" class="animate-bounce">
+        <rect x="1" y="1" width="12" height="18" rx="6" stroke="currentColor" stroke-width="1.3"/>
+        <circle cx="7" cy="6" r="1.6" fill="currentColor"/>
+      </svg>
+    </a>
+  </section>
+
+  <!-- =====================================================
+       PROBLEM: The Recruitment Challenge
+  ====================================================== -->
+  <section id="about" class="relative py-28 sm:py-32 overflow-hidden">
+    <div class="absolute inset-0 bg-grid grid-fade-section opacity-40 pointer-events-none" aria-hidden="true"></div>
+    <div class="relative max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="reveal max-w-2xl mx-auto text-center">
+        <p class="eyebrow mx-auto w-fit mb-5"><span class="w-1.5 h-1.5 rounded-full bg-cyan"></span>The Problem</p>
+        <h2 class="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-white">The Recruitment Challenge</h2>
+        <p class="mt-4 text-mist text-lg">Hiring pipelines drown in volume long before they reach the right people — and keyword filters quietly throw the best candidates away.</p>
+      </div>
+
+      <div class="mt-16 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Card 1: Thousands of CVs -->
+        <article class="reveal glass-card rounded-2xl p-7" data-delay="0">
+          <div class="icon-pulse w-12 h-12 rounded-xl bg-indigo/10 border border-indigo/30 flex items-center justify-center mb-6">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A5B4FC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M9.5 13.5h5M9.5 17h5"/>
+              <path d="M4 7h1M4 11h1M4 15h1" opacity=".6"/>
+            </svg>
+          </div>
+          <h3 class="font-display text-lg font-semibold text-white mb-2">Thousands of CVs</h3>
+          <p class="text-sm text-mist leading-relaxed">A single open role can attract thousands of applications, far more than any team can read with care.</p>
+        </article>
+
+        <!-- Card 2: Manual Screening -->
+        <article class="reveal glass-card rounded-2xl p-7" data-delay="100">
+          <div class="icon-pulse w-12 h-12 rounded-xl bg-violet/10 border border-violet/30 flex items-center justify-center mb-6">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C4B5FD" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7"/>
+              <path d="M16.5 3.5l1 1m-2-2l3 3" opacity=".7"/>
+            </svg>
+          </div>
+          <h3 class="font-display text-lg font-semibold text-white mb-2">Manual Screening</h3>
+          <p class="text-sm text-mist leading-relaxed">Recruiters spend hours scanning resumes by hand, time that scales linearly with every new applicant.</p>
+        </article>
+
+        <!-- Card 3: Keyword Matching -->
+        <article class="reveal glass-card rounded-2xl p-7" data-delay="200">
+          <div class="icon-pulse w-12 h-12 rounded-xl bg-cyan/10 border border-cyan/30 flex items-center justify-center mb-6">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#67E8F9" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="10.5" cy="10.5" r="6.5"/><path d="M19.5 19.5L15 15"/>
+              <text x="7.4" y="13.5" font-family="JetBrains Mono, monospace" font-size="6.5" fill="#67E8F9" stroke="none">"x"</text>
+            </svg>
+          </div>
+          <h3 class="font-display text-lg font-semibold text-white mb-2">Keyword Matching</h3>
+          <p class="text-sm text-mist leading-relaxed">Legacy filters reward exact phrasing, not real ability, so qualified people get filtered out by accident.</p>
+        </article>
+
+        <!-- Card 4: Missed Talent -->
+        <article class="reveal glass-card rounded-2xl p-7" data-delay="300">
+          <div class="icon-pulse w-12 h-12 rounded-xl bg-rose-400/10 border border-rose-400/30 flex items-center justify-center mb-6">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FDA4AF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19l6-9 4 5 6-9"/><path d="M16 5h4v4" opacity=".6"/>
+              <circle cx="4" cy="19" r="1.2" fill="#FDA4AF" stroke="none"/>
+            </svg>
+          </div>
+          <h3 class="font-display text-lg font-semibold text-white mb-2">Missed Talent</h3>
+          <p class="text-sm text-mist leading-relaxed">The strongest candidates are often described differently than the job post, so they never surface at all.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider max-w-7xl mx-auto"></div>
+
+  <!-- =====================================================
+       MISSION
+  ====================================================== -->
+  <section class="relative py-28 sm:py-32 overflow-hidden">
+    <div class="absolute -right-40 top-1/4 w-[28rem] h-[28rem] aurora float-slower bg-violet rounded-full pointer-events-none" aria-hidden="true"></div>
+    <div class="relative max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center">
+
+      <!-- Left: large typographic statement -->
+      <div class="reveal">
+        <p class="eyebrow mb-6"><span class="w-1.5 h-1.5 rounded-full bg-violet"></span>Our Mission</p>
+        <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight leading-[1.12] text-white">
+          We believe hiring should reward
+          <span class="text-gradient">what people can actually do</span> —
+          not how well their resume happens to be written.
+        </h2>
+        <p class="mt-8 text-lg text-mist leading-relaxed max-w-lg">
+          3000-CV-MATCHING was built to replace brittle keyword filters with a semantic understanding of skills, context and intent — so every candidate is read fairly, at any scale.
+        </p>
+        <div class="mt-10 flex items-center gap-10">
+          <div>
+            <span class="font-display text-2xl text-white block">Fair</span>
+            <span class="text-xs text-mist font-mono">by design</span>
+          </div>
+          <div>
+            <span class="font-display text-2xl text-white block">Fast</span>
+            <span class="text-xs text-mist font-mono">at any volume</span>
+          </div>
+          <div>
+            <span class="font-display text-2xl text-white block">Clear</span>
+            <span class="text-xs text-mist font-mono">explainable results</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: glowing AI illustration -->
+      <div class="reveal relative" data-delay="150">
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none" aria-hidden="true">
+          <div class="w-72 h-72 rounded-full bg-violet/30 blur-[90px]"></div>
+        </div>
+        <svg viewBox="0 0 420 420" class="relative w-full max-w-sm mx-auto" role="img" aria-label="Abstract illustration of a glowing AI core surrounded by orbiting nodes">
+          <defs>
+            <radialGradient id="missionGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#A78BFA" stop-opacity="0.6"/>
+              <stop offset="100%" stop-color="#A78BFA" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#6366F1"/><stop offset="100%" stop-color="#22D3EE"/>
+            </linearGradient>
+          </defs>
+          <circle cx="210" cy="210" r="140" fill="url(#missionGlow)"/>
+          <circle cx="210" cy="210" r="120" fill="none" stroke="url(#ringGrad)" stroke-width="1" opacity="0.35" class="core-ring"/>
+          <circle cx="210" cy="210" r="92" fill="none" stroke="#A78BFA" stroke-width="1" opacity="0.3" stroke-dasharray="3 9" class="core-ring-rev"/>
+          <circle cx="210" cy="210" r="46" fill="#0A0F1C" stroke="url(#ringGrad)" stroke-width="1.5"/>
+          <circle cx="210" cy="210" r="46" fill="url(#missionGlow)" class="core-pulse"/>
+          <g stroke="#C7D2FE" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M194 196c0-9 7-16 16-16s16 7 16 16c0 6-3 10-7 13 0 5-4 9-9 9s-9-4-9-9c-4-3-7-7-7-13z" transform="translate(0,2) scale(0.9)" />
+          </g>
+          <circle cx="210" cy="90"  r="5" fill="#22D3EE"/>
+          <circle cx="330" cy="210" r="5" fill="#A78BFA"/>
+          <circle cx="210" cy="330" r="5" fill="#6366F1"/>
+          <circle cx="90"  cy="210" r="5" fill="#67E8F9"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider max-w-7xl mx-auto"></div>
+
+  <!-- =====================================================
+       HOW OUR AI WORKS — pipeline
+  ====================================================== -->
+  <section id="pipeline" class="relative py-28 sm:py-32 overflow-hidden">
+    <div class="absolute inset-0 bg-grid grid-fade-section opacity-30 pointer-events-none" aria-hidden="true"></div>
+    <div class="relative max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="reveal max-w-2xl mx-auto text-center mb-16">
+        <p class="eyebrow mx-auto w-fit mb-5"><span class="w-1.5 h-1.5 rounded-full bg-indigo"></span>Pipeline</p>
+        <h2 class="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-white">How Our AI Works</h2>
+        <p class="mt-4 text-mist text-lg">Transforming resumes into meaningful hiring insights.</p>
+      </div>
+
+      <!-- horizontal scroll pipeline -->
+      <div class="relative">
+        <div class="flex gap-5 overflow-x-auto pb-6 px-1 snap-x snap-mandatory lg:grid lg:grid-cols-9 lg:overflow-visible lg:gap-3">
+          <!-- Step template repeated -->
+          <div data-pipeline-step class="snap-start shrink-0 w-44 lg:w-auto glass-card rounded-2xl p-4 text-center relative">
+            <div class="icon-pulse w-10 h-10 mx-auto rounded-lg bg-indigo/10 border border-indigo/30 flex items-center justify-center mb-3">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A5B4FC" stroke-width="1.7" stroke-linecap="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M5 17v2a2 2 0 002 2h10a2 2 0 002-2v-2"/></svg>
+            </div>
+            <p class="font-mono text-[10px] text-cyan mb-1">01</p>
+            <h3 class="font-display text-sm font-semibold text-white">Upload ZIP</h3>
+          </div>
+
+          <div data-pipeline-step class="snap-start shrink-0 w-44 lg:w-auto glass-card rounded-2xl p-4 text-center">
+            <div class="icon-pulse w-10 h-10 mx-auto rounded-lg bg-indigo/10 border border-indigo/30 flex items-center justify-center mb-3">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A5B4FC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg>
+            </div>
+            <p class="font-mono text-[10px] text-cyan mb-1">02</p>
+            <h3 class="font-display text-sm font-semibold text-white">Read PDF</h3>
+          </div>
+
+          <div data-pipeline-step class="snap-start shrink-0 w-44 lg:w-auto glass-card rounded-2xl p-4 text-center">
+            <div class="icon-pulse w-10 h-10 mx-auto rounded-lg bg-violet/10 border border-violet/30 flex items-center justify-center mb-3">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C4B5FD" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h5"/></svg>
+            </div>
+            <p class="font-mono text-[10px] text-cyan mb-1">03</p>
+            <h3 class="font-display text-sm font-semibold text-white">OCR (if needed)</h3>
+          </div>
+
+          <div data-pipeline-step class="snap-start shrink-0 w-44 lg:w-auto glass-card rounded-2xl p-4 text-center">
+            <div class="icon-pulse w-10 h-10 mx-auto rounded-lg bg-violet/10 border border-violet/30 flex items-center justify-center mb-3">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C4B5FD" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6h14M5 12h9M5 18h14"/></svg>
+            </div>
+            <p class="font-mono text-[10px] text-cyan mb-1">04</p>
+            <h3 class="font-display text-sm font-semibold text-white">Clean Text</h3>
+          </div>
+
+          <div data-pipeline-step class="snap-start shrink-0 w-44 lg:w-auto glass-card rounded-2xl p-4 text-center">
+            <div class="icon-pulse w-10 h-10 mx-auto rounded-lg bg-cyan/10 border border-cyan/30 flex items-center justify-center mb-3">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#67E8F9" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.8 5.7L21 9l-4.5 4.4L17.6 20 12 16.9 6.4 20l1.1-6.6L3 9l6.2-1.3z"/></svg>
+            </div>
+            <p class="font-mono text-[10px] text-cyan mb-1">05</p>
+            <h3 class="font-display text-sm font-semibold text-white">Extract Skills</h3>
+          </div>
+
+          <div data-pipeline-step class="snap-start shrink-0 w-44 lg:w-auto glass-card rounded-2xl p-4 text-center">
+            <div class="icon-pulse w-10 h-10 mx-auto rounded-lg bg-cyan/10 border border-cyan/30 flex items-center justify-center mb-3">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#67E8F9" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="12" cy="18" r="2.4"/><path d="M8 7l8 0M7 8l4 8M17 8l-4 8"/></svg>
+            </div>
+            <p class="font-mono text-[10px] text-cyan mb-1">06</p>
+            <h3 class="font-display text-sm font-semibold text-white">Sentence Transformer</h3>
+          </div>
+
+          <div data-pipeline-step class="snap-start shrink-0 w-44 lg:w-auto glass-card rounded-2xl p-4 text-center">
+            <div class="icon-pulse w-10 h-10 mx-auto rounded-lg bg-indigo/10 border border-indigo/30 flex items-center justify-center mb-3">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A5B4FC" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="12" r="3"/><circle cx="17" cy="12" r="3"/><path d="M10 12h4"/></svg>
+            </div>
+            <p class="font-mono text-[10px] text-cyan mb-1">07</p>
+            <h3 class="font-display text-sm font-semibold text-white">Semantic Matching</h3>
+          </div>
+
+          <div data-pipeline-step class="snap-start shrink-0 w-44 lg:w-auto glass-card rounded-2xl p-4 text-center">
+            <div class="icon-pulse w-10 h-10 mx-auto rounded-lg bg-violet/10 border border-violet/30 flex items-center justify-center mb-3">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C4B5FD" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>
+            </div>
+            <p class="font-mono text-[10px] text-cyan mb-1">08</p>
+            <h3 class="font-display text-sm font-semibold text-white">Candidate Ranking</h3>
+          </div>
+
+          <div data-pipeline-step class="snap-start shrink-0 w-44 lg:w-auto glass-card rounded-2xl p-4 text-center">
+            <div class="icon-pulse w-10 h-10 mx-auto rounded-lg bg-cyan/10 border border-cyan/30 flex items-center justify-center mb-3">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#67E8F9" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 4v8l6 3"/></svg>
+            </div>
+            <p class="font-mono text-[10px] text-cyan mb-1">09</p>
+            <h3 class="font-display text-sm font-semibold text-white">Radar Analysis</h3>
+          </div>
+        </div>
+
+        <!-- glowing connector line (desktop) -->
+        <svg class="hidden lg:block absolute top-9 left-0 w-full h-1 -z-10" preserveAspectRatio="none" viewBox="0 0 100 1">
+          <line x1="6" y1="0.5" x2="94" y2="0.5" stroke="url(#lineGrad)" stroke-width="0.4" class="flow-path" vector-effect="non-scaling-stroke"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider max-w-7xl mx-auto"></div>
+
+  <!-- =====================================================
+       INPUT -> AI ENGINE -> OUTPUT
+  ====================================================== -->
+  <section class="relative py-28 sm:py-32 overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+      <div class="aurora float-slow absolute top-1/3 left-1/2 -translate-x-1/2 w-[36rem] h-[36rem] rounded-full bg-indigo opacity-30"></div>
+    </div>
+    <div class="relative max-w-6xl mx-auto px-6 lg:px-8">
+      <div class="reveal max-w-2xl mx-auto text-center mb-16">
+        <p class="eyebrow mx-auto w-fit mb-5"><span class="w-1.5 h-1.5 rounded-full bg-violet"></span>End to End</p>
+        <h2 class="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-white">From Raw Files to Hiring Decisions</h2>
+      </div>
+
+      <div class="grid lg:grid-cols-3 gap-10 items-center">
+        <!-- INPUT -->
+        <div class="reveal glass-card rounded-2xl p-7 order-1">
+          <p class="eyebrow mb-5"><span class="w-1.5 h-1.5 rounded-full bg-cyan"></span>Input</p>
+          <div class="space-y-3">
+            <div class="flex items-center gap-3 rounded-xl border border-edge bg-white/[0.02] px-4 py-3">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A5B4FC" stroke-width="1.7"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>
+              <span class="text-sm text-gray-200">ZIP File of Resumes</span>
+            </div>
+            <div class="flex items-center gap-3 rounded-xl border border-edge bg-white/[0.02] px-4 py-3">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#67E8F9" stroke-width="1.7"><path d="M12 2l2.8 5.7L21 9l-4.5 4.4L17.6 20 12 16.9 6.4 20l1.1-6.6L3 9l6.2-1.3z"/></svg>
+              <span class="text-sm text-gray-200">Job Skills &amp; Requirements</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI CORE — center focus -->
+        <div class="reveal order-3 lg:order-2 flex justify-center" data-delay="150">
+          <div class="relative w-64 h-64">
+            <div class="absolute inset-0 rounded-full bg-violet/30 blur-3xl"></div>
+            <svg viewBox="0 0 260 260" class="relative w-full h-full" role="img" aria-label="Animated AI core processing input into structured output">
+              <defs>
+                <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#22D3EE" stop-opacity="0.7"/>
+                  <stop offset="100%" stop-color="#22D3EE" stop-opacity="0"/>
+                </radialGradient>
+              </defs>
+              <circle cx="130" cy="130" r="100" fill="none" stroke="#6366F1" stroke-width="1" opacity="0.3" class="core-ring"/>
+              <circle cx="130" cy="130" r="78" fill="none" stroke="#A78BFA" stroke-width="1" stroke-dasharray="2 7" opacity="0.4" class="core-ring-rev"/>
+              <circle cx="130" cy="130" r="50" fill="url(#coreGlow)" class="core-pulse"/>
+              <circle cx="130" cy="130" r="34" fill="#0A0F1C" stroke="#22D3EE" stroke-width="1.6"/>
+              <text x="130" y="135" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="11" font-weight="600" fill="#F9FAFB">AI</text>
+
+              <!-- orbiting particles -->
+              <circle r="3.5" fill="#6366F1"><animateMotion dur="6s" repeatCount="indefinite" path="M130,30 A100,100 0 1,1 129.9,30"/></circle>
+              <circle r="3"   fill="#A78BFA"><animateMotion dur="9s" repeatCount="indefinite" path="M130,52 A78,78 0 1,0 129.9,52"/></circle>
+              <circle r="2.5" fill="#22D3EE"><animateMotion dur="4.5s" repeatCount="indefinite" path="M130,30 A100,100 0 1,1 129.9,30"/></circle>
+            </svg>
+          </div>
+        </div>
+
+        <!-- OUTPUT -->
+        <div class="reveal glass-card rounded-2xl p-7 order-2 lg:order-3" data-delay="250">
+          <p class="eyebrow mb-5"><span class="w-1.5 h-1.5 rounded-full bg-indigo"></span>Output</p>
+          <ul class="space-y-3 text-sm text-gray-200">
+            <li class="flex items-center gap-3 rounded-xl border border-edge bg-white/[0.02] px-4 py-3"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#67E8F9" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>Candidate Ranking</li>
+            <li class="flex items-center gap-3 rounded-xl border border-edge bg-white/[0.02] px-4 py-3"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C4B5FD" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 4v8l6 3"/></svg>Radar Chart</li>
+            <li class="flex items-center gap-3 rounded-xl border border-edge bg-white/[0.02] px-4 py-3"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A5B4FC" stroke-width="1.8"><path d="M12 2v6m0 0l-3-3m3 3l3-3M5 22h14"/></svg>Skill Gap</li>
+            <li class="flex items-center gap-3 rounded-xl border border-edge bg-white/[0.02] px-4 py-3"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#67E8F9" stroke-width="1.8"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg>Candidate Details</li>
+            <li class="flex items-center gap-3 rounded-xl border border-edge bg-white/[0.02] px-4 py-3"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C4B5FD" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 13h2v4H8zM12 9h2v8h-2zM16 11h2v6h-2z"/></svg>Excel Report</li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="reveal mt-16 text-center font-display text-xl sm:text-2xl text-white max-w-2xl mx-auto" data-delay="100">
+        "Our AI transforms unstructured resumes into <span class="text-gradient">structured hiring intelligence.</span>"
+      </p>
+    </div>
+  </section>
+
+  <div class="section-divider max-w-7xl mx-auto"></div>
+
+  <!-- =====================================================
+       SYSTEM ARCHITECTURE
+  ====================================================== -->
+  <section id="technology" class="relative py-28 sm:py-32 overflow-hidden">
+    <div class="absolute inset-0 bg-grid grid-fade-section opacity-30 pointer-events-none" aria-hidden="true"></div>
+    <div class="relative max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="reveal max-w-2xl mx-auto text-center mb-16">
+        <p class="eyebrow mx-auto w-fit mb-5"><span class="w-1.5 h-1.5 rounded-full bg-cyan"></span>Architecture</p>
+        <h2 class="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-white">System Architecture</h2>
+      </div>
+
+      <div class="grid lg:grid-cols-2 gap-14 items-start">
+        <!-- Layered blocks -->
+        <div class="reveal flex flex-col items-center gap-0">
+          <!-- Client Layer -->
+          <div class="grad-border w-full max-w-md p-5 flex items-center gap-4">
+            <div class="w-11 h-11 shrink-0 rounded-lg bg-indigo/10 border border-indigo/30 flex items-center justify-center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A5B4FC" stroke-width="1.7"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+            </div>
+            <div>
+              <h3 class="font-display text-sm font-semibold text-white">Client Layer</h3>
+              <p class="text-xs text-mist font-mono mt-0.5">Web UI · Tailwind</p>
+            </div>
+          </div>
+          <svg width="2" height="36" class="my-1"><line x1="1" y1="0" x2="1" y2="36" stroke="url(#lineGrad)" stroke-width="2" class="flow-path"/></svg>
+
+          <!-- FastAPI Backend -->
+          <div class="grad-border w-full max-w-md p-5 flex items-center gap-4">
+            <div class="w-11 h-11 shrink-0 rounded-lg bg-violet/10 border border-violet/30 flex items-center justify-center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C4B5FD" stroke-width="1.7"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg>
+            </div>
+            <div>
+              <h3 class="font-display text-sm font-semibold text-white">FastAPI Backend</h3>
+              <p class="text-xs text-mist font-mono mt-0.5">REST · Async Workers</p>
+            </div>
+          </div>
+          <svg width="2" height="36" class="my-1"><line x1="1" y1="0" x2="1" y2="36" stroke="url(#lineGrad)" stroke-width="2" class="flow-path"/></svg>
+
+          <!-- AI Engine -->
+          <div class="grad-border w-full max-w-md p-5 flex items-center gap-4">
+            <div class="w-11 h-11 shrink-0 rounded-lg bg-cyan/10 border border-cyan/30 flex items-center justify-center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#67E8F9" stroke-width="1.7"><circle cx="7" cy="12" r="3"/><circle cx="17" cy="12" r="3"/><path d="M10 12h4"/></svg>
+            </div>
+            <div>
+              <h3 class="font-display text-sm font-semibold text-white">AI Engine</h3>
+              <p class="text-xs text-mist font-mono mt-0.5">Embeddings · Ranking</p>
+            </div>
+          </div>
+          <svg width="2" height="36" class="my-1"><line x1="1" y1="0" x2="1" y2="36" stroke="url(#lineGrad)" stroke-width="2" class="flow-path"/></svg>
+
+          <!-- Storage -->
+          <div class="grad-border w-full max-w-md p-5 flex items-center gap-4">
+            <div class="w-11 h-11 shrink-0 rounded-lg bg-indigo/10 border border-indigo/30 flex items-center justify-center">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A5B4FC" stroke-width="1.7"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>
+            </div>
+            <div>
+              <h3 class="font-display text-sm font-semibold text-white">Storage</h3>
+              <p class="text-xs text-mist font-mono mt-0.5">Documents · Vectors · Reports</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layer descriptions -->
+        <div class="reveal space-y-8" data-delay="150">
+          <div>
+            <h4 class="font-display text-sm font-semibold text-indigo-300">01 · Client Layer</h4>
+            <p class="text-sm text-mist mt-2 leading-relaxed">Recruiters upload resumes and define role requirements through a responsive browser interface — no installs required.</p>
+          </div>
+          <div>
+            <h4 class="font-display text-sm font-semibold text-violet-300">02 · FastAPI Backend</h4>
+            <p class="text-sm text-mist mt-2 leading-relaxed">A lightweight async API orchestrates uploads, parsing jobs, and result delivery with predictable, low-latency responses.</p>
+          </div>
+          <div>
+            <h4 class="font-display text-sm font-semibold text-cyan-300">03 · AI Engine</h4>
+            <p class="text-sm text-mist mt-2 leading-relaxed">Sentence-transformer models convert resumes and job descriptions into vectors, then score candidates by semantic similarity.</p>
+          </div>
+          <div>
+            <h4 class="font-display text-sm font-semibold text-indigo-300">04 · Storage</h4>
+            <p class="text-sm text-mist mt-2 leading-relaxed">Parsed documents, embeddings, and generated reports are persisted for fast retrieval and auditability.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider max-w-7xl mx-auto"></div>
+
+  <!-- =====================================================
+       TECHNOLOGY STACK
+  ====================================================== -->
+  <section class="relative py-28 sm:py-32 overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+      <div class="aurora float-slow absolute top-0 left-1/4 w-[26rem] h-[26rem] rounded-full bg-cyan opacity-25"></div>
+      <div class="aurora float-slower absolute bottom-0 right-1/4 w-[26rem] h-[26rem] rounded-full bg-indigo opacity-25"></div>
+    </div>
+    <div class="relative max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="reveal max-w-2xl mx-auto text-center mb-16">
+        <p class="eyebrow mx-auto w-fit mb-5"><span class="w-1.5 h-1.5 rounded-full bg-violet"></span>Technology Stack</p>
+        <h2 class="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-white">Built on Proven AI Infrastructure</h2>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+        <!-- Tech cards -->
+        <div class="reveal glass-card float-card rounded-2xl p-6 text-center" data-delay="0" style="animation-delay:.1s">
+          <div class="w-10 h-10 mx-auto rounded-lg bg-emerald-400/10 border border-emerald-400/30 flex items-center justify-center mb-3">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6EE7B7" stroke-width="1.7"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg>
+          </div>
+          <h3 class="font-display text-sm font-semibold text-white">FastAPI</h3>
+          <p class="text-xs text-mist mt-1">High-performance async API</p>
+        </div>
+
+        <div class="reveal glass-card float-card rounded-2xl p-6 text-center" data-delay="50" style="animation-delay:.3s">
+          <div class="w-10 h-10 mx-auto rounded-lg bg-violet/10 border border-violet/30 flex items-center justify-center mb-3">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C4B5FD" stroke-width="1.7"><circle cx="7" cy="12" r="3"/><circle cx="17" cy="12" r="3"/><path d="M10 12h4"/></svg>
+          </div>
+          <h3 class="font-display text-sm font-semibold text-white">Sentence Transformers</h3>
+          <p class="text-xs text-mist mt-1">Semantic text embeddings</p>
+        </div>
+
+        <div class="reveal glass-card float-card rounded-2xl p-6 text-center" data-delay="100" style="animation-delay:.5s">
+          <div class="w-10 h-10 mx-auto rounded-lg bg-orange-400/10 border border-orange-400/30 flex items-center justify-center mb-3">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FDBA74" stroke-width="1.7"><path d="M12 2a4 4 0 014 4c0 1.2-.6 2.2-1.5 2.9A4 4 0 0118 12.5c0 1.6-1 3-2.4 3.6A4 4 0 0112 20a4 4 0 01-3.6-2.2A4 4 0 016 14.5a4 4 0 011.5-3.1A4 4 0 016 8a4 4 0 016-6z"/></svg>
+          </div>
+          <h3 class="font-display text-sm font-semibold text-white">PyTorch</h3>
+          <p class="text-xs text-mist mt-1">Model inference engine</p>
+        </div>
+
+        <div class="reveal glass-card float-card rounded-2xl p-6 text-center" data-delay="150" style="animation-delay:.2s">
+          <div class="w-10 h-10 mx-auto rounded-lg bg-cyan/10 border border-cyan/30 flex items-center justify-center mb-3">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#67E8F9" stroke-width="1.7"><path d="M12 2l2.8 5.7L21 9l-4.5 4.4L17.6 20 12 16.9 6.4 20l1.1-6.6L3 9l6.2-1.3z"/></svg>
+          </div>
+          <h3 class="font-display text-sm font-semibold text-white">spaCy</h3>
+          <p class="text-xs text-mist mt-1">Skill &amp; entity extraction</p>
+        </div>
+
+        <div class="reveal glass-card float-card rounded-2xl p-6 text-center" data-delay="200" style="animation-delay:.4s">
+          <div class="w-10 h-10 mx-auto rounded-lg bg-rose-400/10 border border-rose-400/30 flex items-center justify-center mb-3">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FDA4AF" stroke-width="1.7"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg>
+          </div>
+          <h3 class="font-display text-sm font-semibold text-white">PyMuPDF</h3>
+          <p class="text-xs text-mist mt-1">PDF parsing &amp; rendering</p>
+        </div>
+
+        <div class="reveal glass-card float-card rounded-2xl p-6 text-center" data-delay="250" style="animation-delay:.15s">
+          <div class="w-10 h-10 mx-auto rounded-lg bg-indigo/10 border border-indigo/30 flex items-center justify-center mb-3">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A5B4FC" stroke-width="1.7"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h5"/></svg>
+          </div>
+          <h3 class="font-display text-sm font-semibold text-white">OCR</h3>
+          <p class="text-xs text-mist mt-1">Scanned document recovery</p>
+        </div>
+
+        <div class="reveal glass-card float-card rounded-2xl p-6 text-center" data-delay="300" style="animation-delay:.35s">
+          <div class="w-10 h-10 mx-auto rounded-lg bg-sky-400/10 border border-sky-400/30 flex items-center justify-center mb-3">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7DD3FC" stroke-width="1.7"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>
+          </div>
+          <h3 class="font-display text-sm font-semibold text-white">Tailwind CSS</h3>
+          <p class="text-xs text-mist mt-1">Utility-first interface styling</p>
+        </div>
+
+        <div class="reveal glass-card float-card rounded-2xl p-6 text-center" data-delay="350" style="animation-delay:.25s">
+          <div class="w-10 h-10 mx-auto rounded-lg bg-amber-400/10 border border-amber-400/30 flex items-center justify-center mb-3">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FCD34D" stroke-width="1.7"><circle cx="12" cy="12" r="8"/><path d="M12 4v8l6 3"/></svg>
+          </div>
+          <h3 class="font-display text-sm font-semibold text-white">Chart.js</h3>
+          <p class="text-xs text-mist mt-1">Radar &amp; ranking visualizations</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider max-w-7xl mx-auto"></div>
+
+  <!-- =====================================================
+       WHY 3000-CV-MATCHING?
+  ====================================================== -->
+  <section id="features" class="relative py-28 sm:py-32 overflow-hidden">
+    <div class="relative max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="reveal max-w-2xl mx-auto text-center mb-16">
+        <p class="eyebrow mx-auto w-fit mb-5"><span class="w-1.5 h-1.5 rounded-full bg-indigo"></span>Why Us</p>
+        <h2 class="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-white">Why 3000-CV-MATCHING?</h2>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-6">
+        <article class="reveal grad-border p-7 hover:shadow-[0_18px_50px_-16px_rgba(99,102,241,0.4)] transition-shadow duration-300" data-delay="0">
+          <div class="icon-pulse w-12 h-12 rounded-xl bg-indigo/10 border border-indigo/30 flex items-center justify-center mb-6">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A5B4FC" stroke-width="1.7"><circle cx="7" cy="12" r="3"/><circle cx="17" cy="12" r="3"/><path d="M10 12h4"/></svg>
+          </div>
+          <h3 class="font-display text-lg font-semibold text-white mb-2">Semantic Understanding</h3>
+          <p class="text-sm text-mist leading-relaxed">Resumes are read for meaning, not keywords, so candidates are judged on real, transferable skill.</p>
+        </article>
+
+        <article class="reveal grad-border p-7 hover:shadow-[0_18px_50px_-16px_rgba(167,139,250,0.4)] transition-shadow duration-300" data-delay="100">
+          <div class="icon-pulse w-12 h-12 rounded-xl bg-violet/10 border border-violet/30 flex items-center justify-center mb-6">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C4B5FD" stroke-width="1.7"><circle cx="12" cy="12" r="8"/><path d="M12 4v8l6 3"/></svg>
+          </div>
+          <h3 class="font-display text-lg font-semibold text-white mb-2">Explainable AI</h3>
+          <p class="text-sm text-mist leading-relaxed">Every score comes with a radar breakdown and skill gap analysis, so rankings are never a black box.</p>
+        </article>
+
+        <article class="reveal grad-border p-7 hover:shadow-[0_18px_50px_-16px_rgba(34,211,238,0.4)] transition-shadow duration-300" data-delay="200">
+          <div class="icon-pulse w-12 h-12 rounded-xl bg-cyan/10 border border-cyan/30 flex items-center justify-center mb-6">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#67E8F9" stroke-width="1.7"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h5"/></svg>
+          </div>
+          <h3 class="font-display text-lg font-semibold text-white mb-2">OCR Support</h3>
+          <p class="text-sm text-mist leading-relaxed">Scanned and image-based resumes are recovered automatically, so no candidate is overlooked.</p>
+        </article>
+
+        <article class="reveal grad-border p-7 hover:shadow-[0_18px_50px_-16px_rgba(99,102,241,0.4)] transition-shadow duration-300" data-delay="300">
+          <div class="icon-pulse w-12 h-12 rounded-xl bg-indigo/10 border border-indigo/30 flex items-center justify-center mb-6">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A5B4FC" stroke-width="1.7"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg>
+          </div>
+          <h3 class="font-display text-lg font-semibold text-white mb-2">High Performance</h3>
+          <p class="text-sm text-mist leading-relaxed">Thousands of resumes are ranked in seconds, built on async infrastructure that scales with hiring volume.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider max-w-7xl mx-auto"></div>
+
+  <!-- =====================================================
+       FEATURES TIMELINE
+  ====================================================== -->
+  <section class="relative py-28 sm:py-32 overflow-hidden">
+    <div class="relative max-w-4xl mx-auto px-6 lg:px-8">
+      <div class="reveal max-w-2xl mx-auto text-center mb-16">
+        <p class="eyebrow mx-auto w-fit mb-5"><span class="w-1.5 h-1.5 rounded-full bg-cyan"></span>Shipped</p>
+        <h2 class="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-white">Completed Features</h2>
+      </div>
+
+      <ol class="relative pl-10">
+        <div class="timeline-line absolute left-3.5 top-1 bottom-1 w-px" aria-hidden="true"></div>
+
+        <!-- Timeline items -->
+        <li class="reveal relative pb-9" data-delay="0">
+          <span class="timeline-dot absolute -left-[27px] top-1 w-3 h-3 rounded-full bg-cyan"></span>
+          <h3 class="font-display text-sm font-semibold text-white">Batch Upload</h3>
+          <p class="text-sm text-mist mt-1">Upload entire candidate pools as a single ZIP archive.</p>
+        </li>
+        <li class="reveal relative pb-9" data-delay="60">
+          <span class="timeline-dot absolute -left-[27px] top-1 w-3 h-3 rounded-full bg-cyan"></span>
+          <h3 class="font-display text-sm font-semibold text-white">PDF Parsing</h3>
+          <p class="text-sm text-mist mt-1">Reliable text extraction across resume formats and layouts.</p>
+        </li>
+        <li class="reveal relative pb-9" data-delay="120">
+          <span class="timeline-dot absolute -left-[27px] top-1 w-3 h-3 rounded-full bg-violet"></span>
+          <h3 class="font-display text-sm font-semibold text-white">OCR</h3>
+          <p class="text-sm text-mist mt-1">Recovers content from scanned and image-based documents.</p>
+        </li>
+        <li class="reveal relative pb-9" data-delay="180">
+          <span class="timeline-dot absolute -left-[27px] top-1 w-3 h-3 rounded-full bg-violet"></span>
+          <h3 class="font-display text-sm font-semibold text-white">Semantic Extraction</h3>
+          <p class="text-sm text-mist mt-1">Identifies skills, roles, and context, not just raw keywords.</p>
+        </li>
+        <li class="reveal relative pb-9" data-delay="240">
+          <span class="timeline-dot absolute -left-[27px] top-1 w-3 h-3 rounded-full bg-indigo"></span>
+          <h3 class="font-display text-sm font-semibold text-white">AI Matching</h3>
+          <p class="text-sm text-mist mt-1">Scores candidates against job requirements using embeddings.</p>
+        </li>
+        <li class="reveal relative pb-9" data-delay="300">
+          <span class="timeline-dot absolute -left-[27px] top-1 w-3 h-3 rounded-full bg-indigo"></span>
+          <h3 class="font-display text-sm font-semibold text-white">Ranking</h3>
+          <p class="text-sm text-mist mt-1">Orders the full candidate pool by match strength.</p>
+        </li>
+        <li class="reveal relative pb-9" data-delay="360">
+          <span class="timeline-dot absolute -left-[27px] top-1 w-3 h-3 rounded-full bg-cyan"></span>
+          <h3 class="font-display text-sm font-semibold text-white">Radar Chart</h3>
+          <p class="text-sm text-mist mt-1">Visual breakdown of strengths across key skill dimensions.</p>
+        </li>
+        <li class="reveal relative pb-9" data-delay="420">
+          <span class="timeline-dot absolute -left-[27px] top-1 w-3 h-3 rounded-full bg-violet"></span>
+          <h3 class="font-display text-sm font-semibold text-white">Skill Gap</h3>
+          <p class="text-sm text-mist mt-1">Highlights exactly what's missing relative to the role.</p>
+        </li>
+        <li class="reveal relative" data-delay="480">
+          <span class="timeline-dot absolute -left-[27px] top-1 w-3 h-3 rounded-full bg-indigo"></span>
+          <h3 class="font-display text-sm font-semibold text-white">Excel Export</h3>
+          <p class="text-sm text-mist mt-1">Download structured results for offline review and sharing.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <div class="section-divider max-w-7xl mx-auto"></div>
+
+  <!-- =====================================================
+       STATISTICS
+  ====================================================== -->
+  <section class="relative py-28 sm:py-32 overflow-hidden">
+    <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+      <div class="aurora float-slower absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40rem] h-[40rem] rounded-full bg-indigo opacity-20"></div>
+    </div>
+    <div class="relative max-w-7xl mx-auto px-6 lg:px-8">
+      <div class="reveal max-w-2xl mx-auto text-center mb-16">
+        <p class="eyebrow mx-auto w-fit mb-5"><span class="w-1.5 h-1.5 rounded-full bg-violet"></span>By the Numbers</p>
+        <h2 class="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-white">Built to Perform</h2>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="reveal glass-card rounded-2xl p-8 text-center" data-delay="0">
+          <p class="font-display text-4xl font-semibold text-white"><span data-counter="50" data-suffix="+">0</span></p>
+          <p class="text-sm text-mist mt-2 font-mono">CVs Tested</p>
+        </div>
+        <div class="reveal glass-card rounded-2xl p-8 text-center" data-delay="100">
+          <p class="font-display text-4xl font-semibold text-white">35–<span data-counter="70" data-suffix="ms">0</span></p>
+          <p class="text-sm text-mist mt-2 font-mono">Average Processing</p>
+        </div>
+        <div class="reveal glass-card rounded-2xl p-8 text-center" data-delay="200">
+          <p class="font-display text-4xl font-semibold text-gradient">Semantic AI</p>
+          <p class="text-sm text-mist mt-2 font-mono">Matching</p>
+        </div>
+        <div class="reveal glass-card rounded-2xl p-8 text-center" data-delay="300">
+          <p class="font-display text-4xl font-semibold text-white"><span data-counter="100" data-suffix="%">0</span></p>
+          <p class="text-sm text-mist mt-2 font-mono">Web Based</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       FOOTER
+  ====================================================== -->
+  <footer id="contact" class="relative overflow-hidden border-t border-edge">
+    <div class="absolute inset-0 bg-grid grid-fade-section opacity-20 pointer-events-none" aria-hidden="true"></div>
+    <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+      <div class="aurora float-slow absolute -bottom-32 left-1/4 w-[26rem] h-[26rem] rounded-full bg-indigo opacity-25"></div>
+      <div class="aurora float-slower absolute -bottom-24 right-1/4 w-[22rem] h-[22rem] rounded-full bg-cyan opacity-20"></div>
+    </div>
+    <div class="absolute inset-0 noise pointer-events-none" aria-hidden="true"></div>
+
+    <div class="relative max-w-7xl mx-auto px-6 lg:px-8 py-20">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-12">
+        <div class="lg:col-span-2">
+          <a href="#top" class="flex items-center gap-2.5 mb-4 w-fit">
+            <span class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo via-violet to-cyan flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2L21 7V17L12 22L3 17V7L12 2Z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="12" r="2.4" fill="white"/></svg>
+            </span>
+            <span class="font-display font-semibold text-white">3000<span class="text-mist">-CV-</span>MATCHING</span>
+          </a>
+          <p class="text-sm text-mist max-w-sm leading-relaxed">A semantic AI recruitment platform that helps teams find the right candidates by understanding meaning, not just matching keywords.</p>
+        </div>
+
+        <div>
+          <h4 class="font-display text-sm font-semibold text-white mb-4">Quick Links</h4>
+          <ul class="space-y-2.5 text-sm text-mist">
+            <li><a href="#about" class="hover:text-white transition-colors">About</a></li>
+            <li><a href="#features" class="hover:text-white transition-colors">Features</a></li>
+            <li><a href="#pipeline" class="hover:text-white transition-colors">Pipeline</a></li>
+            <li><a href="#technology" class="hover:text-white transition-colors">Technology</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-display text-sm font-semibold text-white mb-4">Connect</h4>
+          <ul class="space-y-2.5 text-sm text-mist">
+            <li><a href="#" class="hover:text-white transition-colors inline-flex items-center gap-2">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.73.5.98 5.24.98 11.52c0 4.96 3.22 9.17 7.69 10.66.56.1.77-.24.77-.54 0-.27-.01-1.16-.02-2.1-3.13.68-3.79-1.34-3.79-1.34-.51-1.3-1.25-1.65-1.25-1.65-1.02-.7.08-.69.08-.69 1.13.08 1.72 1.16 1.72 1.16 1 1.72 2.63 1.22 3.27.93.1-.73.39-1.22.71-1.5-2.5-.28-5.13-1.25-5.13-5.56 0-1.23.44-2.23 1.16-3.02-.12-.28-.5-1.42.11-2.97 0 0 .95-.3 3.1 1.16a10.7 10.7 0 015.65 0c2.15-1.46 3.1-1.16 3.1-1.16.61 1.55.23 2.69.11 2.97.72.79 1.16 1.79 1.16 3.02 0 4.32-2.64 5.27-5.15 5.55.4.35.76 1.04.76 2.1 0 1.52-.01 2.74-.01 3.11 0 .3.2.65.78.54A11.03 11.03 0 0023.02 11.5C23.02 5.24 18.27.5 12 .5z"/></svg>
+              GitHub
+            </a></li>
+            <li><a href="#" class="hover:text-white transition-colors inline-flex items-center gap-2">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.95v5.66H9.36V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 110-4.12 2.06 2.06 0 010 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
+              LinkedIn
+            </a></li>
+            <li><a href="mailto:hello@3000cvmatching.ai" class="hover:text-white transition-colors inline-flex items-center gap-2">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+              hello@3000cvmatching.ai
+            </a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section-divider my-10"></div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-mist font-mono">
+        <p>© <span id="year">2026</span> 3000-CV-MATCHING. All rights reserved.</p>
+        <p>Built with semantic AI, for fair hiring.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Single shared script -->
+  <script src="script.js"></script>
+</body>
+</html>
