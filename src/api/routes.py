@@ -35,7 +35,7 @@ def extract_demographics(text: str) -> dict:
         "location": location
     }
 
-@router.post("/evaluate", response_model=MatchResponse)
+@router.post("/evaluate")
 async def evaluate_cv(
     request: Request,
     cv_file: UploadFile = File(...),
@@ -69,7 +69,6 @@ async def evaluate_cv(
         # 3. Thực thi ETL Pipeline kết hợp bọc Exception xử lý file hỏng
         try:
             parsed_text = DocumentParser.extract_text(file_path)
-            # print(parsed_text)
         except Exception as parser_err:
             # Bắt toàn bộ các lỗi liên quan đến file PDF hỏng cấu trúc từ tầng thư viện sâu
             raise HTTPException(
@@ -83,22 +82,29 @@ async def evaluate_cv(
                 detail="Nội dung file sau khi parse không đủ điều kiện phân tích (Văn bản quá ngắn hoặc lỗi bộ gõ)."
             )
 
-        # 1. Get nouns only
+        # Extract nouns
         cv_nouns = SemanticExtractor.extract_nouns(parsed_text)
         
-        # 2. Score via Matcher
+        # Score via Matcher
         matcher = request.app.state.matcher
         candidate_id = f"CAND-{uuid.uuid4().hex[:6].upper()}"
-        print(cv_nouns)
         score, details, matched_nouns = matcher.evaluate_candidate(cv_nouns, jd_skills, candidate_id)
         
-        return MatchResponse(
-            candidate_id=candidate_id,
-            filename=cv_file.filename,
-            match_score=score,
-            extracted_skills=matched_nouns, # Now shows only the relevant matching nouns
-            match_details=details
-        )
+        # Extract demographics just like in evaluate-batch
+        demographics = extract_demographics(parsed_text)
+        # Use filename without extension for the name backup, identical to batch logic
+        name_without_ext = os.path.splitext(cv_file.filename)[0]
+        demographics['name'] = name_without_ext
+        
+        # Return exact same format as elements in evaluate-batch list
+        return {
+            "name": cv_file.filename,
+            "candidate_id": candidate_id,
+            "score": score,
+            "details": details,
+            "extracted_skills": matched_nouns,
+            "demographics": demographics
+        }
 
     except HTTPException as http_ex:
         # Chuyển tiếp các HTTPException đã bắt ở trên ra ngoài
@@ -161,6 +167,7 @@ async def evaluate_batch(
                             cv_nouns, jd_skills, candidate_id
                         )
                         demographics = extract_demographics(parsed_text)
+                        demographics['name'] = file[:-4]
                         results.append({
                             "name": file,
                             "candidate_id": candidate_id,

@@ -1,44 +1,119 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <title>Candidate Analysis | SAIL AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Candidate Analysis | 3000-CV-MATCHING</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles.css">
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              base: '#030712', panel: '#0A0F1C', edge: 'rgba(255,255,255,0.08)',
+              indigo: '#6366F1', violet: '#A78BFA', cyan: '#22D3EE', mist: '#9CA3AF',
+            },
+            fontFamily: {
+              display: ['"Space Grotesk"', 'sans-serif'],
+              body: ['"Inter"', 'sans-serif'],
+              mono: ['"JetBrains Mono"', 'monospace'],
+            },
+          },
+        },
+      };
+    </script>
 </head>
-<body class="bg-slate-50 text-slate-800">
-    <header class="bg-white border-b border-slate-200">
-        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-            <a href="index.html" class="text-slate-500 hover:text-indigo-600">&larr; Back to Dashboard</a>
-            <h1 class="font-bold">Detailed Analysis</h1>
+<body class="bg-base text-gray-200 font-body antialiased min-h-screen relative flex flex-col">
+
+    <div class="fixed inset-0 bg-grid grid-fade pointer-events-none" aria-hidden="true"></div>
+    <div class="fixed inset-0 pointer-events-none" aria-hidden="true">
+      <div class="aurora float-slow absolute -top-32 -right-24 w-[34rem] h-[34rem] rounded-full bg-cyan opacity-10"></div>
+      <div class="aurora float-slower absolute bottom-10 left-[-8rem] w-[30rem] h-[30rem] rounded-full bg-indigo opacity-10"></div>
+    </div>
+    <div class="fixed inset-0 noise pointer-events-none" aria-hidden="true"></div>
+
+    <header class="sticky top-0 z-50 bg-base/80 backdrop-blur-md border-b border-edge">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 h-18 flex items-center justify-between py-4">
+            <a href="index.html" class="flex items-center gap-2 text-mist hover:text-white transition-colors font-medium text-sm group">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="group-hover:-translate-x-1 transition-transform"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Dashboard
+            </a>
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-indigo animate-pulse"></span>
+                <h1 class="font-display font-bold text-white tracking-wide">Detailed Analysis</h1>
+            </div>
         </div>
     </header>
 
-    <main class="max-w-5xl mx-auto px-4 py-8">
-        <div class="space-y-6">
-            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                <h2 class="text-lg font-bold text-slate-900 mb-4">Candidate Profile</h2>
-                <div class="grid grid-cols-2 gap-4 text-sm">
-                    <div><p class="text-slate-500">Full Name</p><p id="candName" class="font-semibold"></p></div>
-                    <div><p class="text-slate-500">Email</p><p id="candEmail" class="font-semibold"></p></div>
-                    <div><p class="text-slate-500">Phone</p><p id="candPhone" class="font-semibold"></p></div>
-                    <div><p class="text-slate-500">Location</p><p id="candLoc" class="font-semibold"></p></div>
+    <main class="relative z-10 max-w-5xl mx-auto w-full px-6 lg:px-8 py-10 flex-grow">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            
+            <div class="lg:col-span-2 bg-panel border border-edge rounded-2xl p-6 shadow-xl backdrop-blur-sm relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-6 opacity-5 text-white">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                </div>
+                <h2 class="font-display text-lg font-bold text-white mb-6 flex items-center gap-2">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-cyan"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    Candidate Profile
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
+                    <div class="bg-base border border-edge rounded-xl p-4 overflow-hidden">
+                        <p class="text-mist text-xs uppercase tracking-wider mb-1">Full Name</p>
+                        <p id="candName" class="font-bold text-white text-base truncate"></p>
+                    </div>
+                    <div class="bg-base border border-edge rounded-xl p-4 overflow-hidden">
+                        <p class="text-mist text-xs uppercase tracking-wider mb-1">Email</p>
+                        <p id="candEmail" class="font-mono text-cyan truncate"></p>
+                    </div>
+                    <div class="bg-base border border-edge rounded-xl p-4">
+                        <p class="text-mist text-xs uppercase tracking-wider mb-1">Phone</p>
+                        <p id="candPhone" class="font-mono text-gray-200 truncate"></p>
+                    </div>
+                    <div class="bg-base border border-edge rounded-xl p-4">
+                        <p class="text-mist text-xs uppercase tracking-wider mb-1">Location</p>
+                        <p id="candLoc" class="font-medium text-gray-200 truncate"></p>
+                    </div>
                 </div>
             </div>
 
-            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                <h2 class="text-lg font-bold text-slate-900 mb-4">Skill Gap Analysis</h2>
-                <div id="gapList" class="space-y-2"></div>
+            <div class="lg:col-span-1 bg-panel border border-edge rounded-2xl p-6 shadow-xl backdrop-blur-sm flex flex-col">
+                <h2 class="font-display text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-violet"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    Skill Gap Alerts
+                </h2>
+                <div id="gapList" class="space-y-3 flex-grow overflow-y-auto pr-2 custom-scrollbar">
+                    </div>
             </div>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                <canvas id="detailRadarChart"></canvas>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <div class="bg-panel border border-edge rounded-2xl p-6 shadow-xl backdrop-blur-sm min-h-[350px] flex flex-col">
+                <h2 class="font-display text-lg font-bold text-white mb-4">Semantic Match Matrix</h2>
+                <div class="relative flex-grow bg-base border border-edge rounded-xl p-4 flex items-center justify-center">
+                    <canvas id="detailRadarChart"></canvas>
+                </div>
             </div>
-            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                <h2 id="candidateName" class="text-xl font-bold mb-4"></h2>
-                <div id="skillTable" class="space-y-2 text-sm"></div>
+            
+            <div class="bg-panel border border-edge rounded-2xl p-6 shadow-xl backdrop-blur-sm">
+                <h2 class="font-display text-lg font-bold text-white mb-4 flex justify-between items-center">
+                    Skill Breakdown
+                    <span class="text-xs font-mono text-mist font-normal">Confidence Score</span>
+                </h2>
+                <div id="skillTable" class="space-y-3 text-sm">
+                    </div>
             </div>
+            
         </div>
     </main>
 
@@ -46,43 +121,111 @@
         const cand = JSON.parse(localStorage.getItem('activeCandidate'));
         if(!cand) window.location.href = 'index.html';
 
-        document.getElementById('candName').textContent = cand.demographics.name;
-        document.getElementById('candEmail').textContent = cand.demographics.email;
-        document.getElementById('candPhone').textContent = cand.demographics.phone;
-        document.getElementById('candLoc').textContent = cand.demographics.location;
+        // 1. Populate Demographics
+        document.getElementById('candName').textContent = cand.demographics?.name || 'Unknown Candidate';
+        document.getElementById('candEmail').textContent = cand.demographics?.email || 'N/A';
+        document.getElementById('candPhone').textContent = cand.demographics?.phone || 'N/A';
+        document.getElementById('candLoc').textContent = cand.demographics?.location || 'N/A';
 
-        // Fill Gap Analysis (Skills < 50% score)
+        // 2. Fill Gap Analysis (Skills < 50% score)
         const gapList = document.getElementById('gapList');
+        let gapsFound = false;
         Object.entries(cand.details).forEach(([skill, info]) => {
             if (info.score < 0.5) {
+                gapsFound = true;
                 gapList.innerHTML += `
-                    <div class="flex items-center text-red-600 text-sm">
-                        <span class="mr-2">✕</span> ${skill} (Missing/Low proficiency)
+                    <div class="flex items-start gap-2 text-red-400 bg-red-400/10 border border-red-400/20 p-3 rounded-xl text-sm font-mono">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mt-0.5 shrink-0"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        <div>
+                            <span class="font-bold uppercase tracking-wide text-white">${skill}</span>
+                            <p class="text-xs text-red-300 mt-1 opacity-80">Missing or low proficiency detected.</p>
+                        </div>
                     </div>
                 `;
             }
         });
         
-        // Render Skills
+        if (!gapsFound) {
+            gapList.innerHTML = `
+                <div class="flex items-center justify-center h-full text-emerald-400/80 font-mono text-sm border border-dashed border-emerald-400/20 rounded-xl p-4 bg-emerald-400/5">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    No major skill gaps detected
+                </div>
+            `;
+        }
+        
+        // 3. Render Skills Table
         const skills = Object.entries(cand.details).sort((a,b) => b[1].score - a[1].score);
-        document.getElementById('skillTable').innerHTML = skills.map(([s, d]) => `
-            <div class="flex justify-between items-center p-3 bg-slate-50 rounded border">
-                <span class="font-medium capitalize">${s}</span>
-                <span class="font-mono text-indigo-600 font-bold">${(d.score * 100).toFixed(0)}%</span>
+        document.getElementById('skillTable').innerHTML = skills.map(([s, d]) => {
+            const percentage = (d.score * 100).toFixed(0);
+            // Use different highlight colors based on score
+            const colorClass = d.score >= 0.8 ? 'text-cyan' : d.score >= 0.5 ? 'text-indigo' : 'text-mist';
+            
+            return `
+            <div class="flex flex-col gap-2 p-3.5 bg-base border border-edge rounded-xl group hover:border-indigo/50 transition-colors">
+                <div class="flex justify-between items-center">
+                    <span class="font-bold uppercase tracking-wider text-gray-200 text-xs">${s}</span>
+                    <span class="font-mono ${colorClass} font-bold">${percentage}%</span>
+                </div>
+                <div class="w-full bg-panel rounded-full h-1.5 overflow-hidden">
+                    <div class="bg-gradient-to-r from-indigo to-cyan h-1.5 rounded-full opacity-80" style="width: ${percentage}%"></div>
+                </div>
             </div>
-        `).join('');
+            `;
+        }).join('');
 
-        // Render Chart
-        new Chart(document.getElementById('detailRadarChart'), {
+        // 4. Render Dark Theme Chart
+        const ctx = document.getElementById('detailRadarChart').getContext('2d');
+        new Chart(ctx, {
             type: 'radar',
             data: {
                 labels: Object.keys(cand.details).map(s => s.toUpperCase()),
                 datasets: [{
                     label: 'Match Quality',
                     data: Object.values(cand.details).map(d => d.score * 100),
-                    backgroundColor: 'rgba(79, 70, 229, 0.2)',
-                    borderColor: '#4f46e5'
+                    backgroundColor: 'rgba(99, 102, 241, 0.2)', // Indigo with opacity
+                    borderColor: '#6366F1', // Indigo solid
+                    pointBackgroundColor: '#0A0F1C', // Panel background
+                    pointBorderColor: '#22D3EE', // Cyan points
+                    pointHoverBackgroundColor: '#22D3EE',
+                    pointHoverBorderColor: '#fff'
                 }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                        pointLabels: { 
+                            color: '#9CA3AF', 
+                            font: { family: '"JetBrains Mono", monospace', size: 10 } 
+                        },
+                        ticks: { 
+                            display: false // Hide internal ticks for cleaner look in dark mode
+                        }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0A0F1C',
+                        titleColor: '#fff',
+                        bodyColor: '#9CA3AF',
+                        borderColor: 'rgba(255,255,255,0.08)',
+                        borderWidth: 1,
+                        padding: 10,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return context.raw + '% Match';
+                            }
+                        }
+                    }
+                }
             }
         });
     </script>
